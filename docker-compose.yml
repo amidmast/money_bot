@@ -1,0 +1,68 @@
+#version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: expense_tracker_db
+    environment:
+      POSTGRES_DB: expense_tracker
+      POSTGRES_USER: expense_user
+      POSTGRES_PASSWORD: expense_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U expense_user -d expense_tracker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - expense_network
+
+  # Telegram Bot Application
+  bot:
+    build: .
+    container_name: expense_tracker_bot
+    environment:
+      # Database configuration
+      DATABASE_URL: postgresql://expense_user:expense_password@postgres:5432/expense_tracker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: expense_tracker
+      DB_USER: expense_user
+      DB_PASSWORD: expense_password
+      
+      # Application configuration
+      DEBUG: "True"
+      LOG_LEVEL: INFO
+      
+      # Telegram Bot Token (set this in .env file)
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      
+      # Google Cloud Speech settings (from .env)
+      GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT}
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+      SPEECH_RECOGNITION_LANGUAGES: ${SPEECH_RECOGNITION_LANGUAGES}
+      SPEECH_TARGET_LANGUAGE: ${SPEECH_TARGET_LANGUAGE}
+    volumes:
+      - ./logs:/app/logs
+      - ./credentials.json:/app/credentials.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - expense_network
+
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  expense_network:
+    driver: bridge
