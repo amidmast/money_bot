@@ -43,11 +43,12 @@ services:
       # Telegram Bot Token (set this in .env file)
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       
-      # Google Cloud Speech settings (from .env)
-      GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT}
-      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
-      SPEECH_RECOGNITION_LANGUAGES: ${SPEECH_RECOGNITION_LANGUAGES}
-      SPEECH_TARGET_LANGUAGE: ${SPEECH_TARGET_LANGUAGE}
+      # Google Cloud Speech settings (from .env, optional)
+      ENABLE_VOICE_INPUT: ${ENABLE_VOICE_INPUT:-False}
+      GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT:-}
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS:-}
+      SPEECH_RECOGNITION_LANGUAGES: ${SPEECH_RECOGNITION_LANGUAGES:-ru-RU,en-US,uk-UA}
+      SPEECH_TARGET_LANGUAGE: ${SPEECH_TARGET_LANGUAGE:-ru-RU}
     volumes:
       - ./logs:/app/logs
       - ./credentials.json:/app/credentials.json:ro

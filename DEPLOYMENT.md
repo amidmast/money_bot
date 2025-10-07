@@ -81,8 +81,8 @@ DB_PASSWORD=your_secure_password_here
 # Build and start services
 docker-compose up -d
 
-# Initialize database
-docker-compose exec bot python setup_database.py
+# Initialize database (tables + migrations + defaults)
+docker-compose exec bot python migrations.py
 
 # View logs
 docker-compose logs -f bot
@@ -141,8 +141,8 @@ cd /opt/expense-tracker-bot
 sudo -u botuser python3 -m venv venv
 sudo -u botuser venv/bin/pip install -r requirements.txt
 
-# Setup database
-sudo -u botuser venv/bin/python setup_database.py
+# Setup database (tables + migrations + defaults)
+sudo -u botuser venv/bin/python migrations.py
 
 # Enable and start service
 sudo systemctl enable expense-bot
@@ -212,6 +212,12 @@ DATABASE_URL=postgresql://user:password@localhost:5432/expense_tracker
 
 # Bot
 TELEGRAM_BOT_TOKEN=your_production_token
+
+# Google Cloud Speech-to-Text
+GOOGLE_CLOUD_PROJECT=your_gcp_project
+GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+SPEECH_RECOGNITION_LANGUAGES=ru-RU,en-US,uk-UA
+SPEECH_TARGET_LANGUAGE=ru-RU
 
 # Security
 SECRET_KEY=your_secret_key_here

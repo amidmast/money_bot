@@ -19,6 +19,13 @@ class Settings:
     DEBUG = os.getenv("DEBUG", "False").lower() == "true"
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
     
+    # Google Cloud Speech-to-Text
+    ENABLE_VOICE_INPUT = os.getenv("ENABLE_VOICE_INPUT", "False").lower() == "true"
+    GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "")
+    GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
+    SPEECH_RECOGNITION_LANGUAGES = os.getenv("SPEECH_RECOGNITION_LANGUAGES", "ru-RU,en-US,uk-UA")
+    SPEECH_TARGET_LANGUAGE = os.getenv("SPEECH_TARGET_LANGUAGE", "ru-RU")
+    
     @property
     def database_url(self):
         if self.DATABASE_URL:

@@ -13,5 +13,5 @@ WHERE preferred_language IS NULL OR preferred_currency IS NULL;
 
 -- Add comments for documentation
 COMMENT ON COLUMN users.preferred_language IS 'User preferred language code (en, ru, etc.)';
-COMMENT ON COLUMN users.preferred_currency IS 'User preferred currency code (USD, EUR, RUB, etc.)';
+COMMENT ON COLUMN users.preferred_currency IS 'User preferred currency code (USD, EUR, etc.)';
 

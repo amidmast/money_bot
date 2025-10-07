@@ -11,4 +11,4 @@ SET currency = 'USD'
 WHERE currency IS NULL;
 
 -- Add comment for documentation
-COMMENT ON COLUMN transactions.currency IS 'Transaction currency code (USD, EUR, RUB, USDT, ATOM, etc.)';
+COMMENT ON COLUMN transactions.currency IS 'Transaction currency code (USD, EUR, USDT, ATOM, etc.)';

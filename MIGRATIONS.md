@@ -4,6 +4,19 @@ This document describes all database migrations applied to the Expense Tracker B
 
 ## Migration History
 
+### Migration 9: Primary Income Category (2025-10-06)
+Purpose: Add `primary_income_category_id` to `users` for balance calculations where expenses are deducted from the primary income bucket.
+
+Changes:
+- Added `primary_income_category_id` column to `users` (INTEGER, NULLABLE, FK to `categories.id`).
+
+SQL:
+```sql
+ALTER TABLE users ADD COLUMN IF NOT EXISTS primary_income_category_id INTEGER;
+ALTER TABLE users ADD CONSTRAINT fk_users_primary_income_category
+  FOREIGN KEY (primary_income_category_id) REFERENCES categories(id);
+```
+
 ### Migration 1: User Preferences (2025-10-03)
 **Purpose**: Add language and currency preferences for users
 
@@ -64,16 +77,16 @@ CREATE TABLE IF NOT EXISTS exchange_rates (
 
 ## Running Migrations
 
-All migrations are automatically applied when running:
+Run full initialization (create tables, run migrations, defaults):
 
 ```bash
-python setup_database.py
+python migrations.py
 ```
 
-Or in Docker:
+In Docker:
 
 ```bash
-docker compose exec bot python setup_database.py
+docker compose exec -T bot python migrations.py
 ```
 
 ## Supported Features After Migrations

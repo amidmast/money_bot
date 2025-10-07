@@ -64,8 +64,13 @@ class ExpenseTrackerBot:
         
         # Message handlers for text input
         self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self._handle_text_message))
-        # Voice/audio handler
-        self.application.add_handler(MessageHandler((filters.VOICE | filters.AUDIO) & ~filters.COMMAND, self._handle_voice_message))
+        
+        # Voice/audio handler (only if enabled)
+        if settings.ENABLE_VOICE_INPUT:
+            self.application.add_handler(MessageHandler((filters.VOICE | filters.AUDIO) & ~filters.COMMAND, self._handle_voice_message))
+            logger.info("Voice input enabled (Google Cloud Speech-to-Text)")
+        else:
+            logger.info("Voice input disabled")
         
         # Debug handler for all messages
         self.application.add_handler(MessageHandler(filters.ALL, self._handle_debug_message))

@@ -19,11 +19,12 @@ A comprehensive Telegram bot for tracking income and expenses with PostgreSQL ba
 - **📅 Date-based Filtering**: View transactions by specific time periods
 - **📋 Transaction History**: Browse recent transactions with full details
 - **🔍 Category Breakdown**: Detailed analysis of spending by category
-- **📊 Visual Reports**: Monthly and yearly expense breakdowns
+- **📊 Visual Reports**: Weekly, monthly, yearly expense breakdowns, balance view
 - **⚡ Real-time Updates**: Instant balance and transaction updates
 - **🌍 Supported Currencies**: USD, USDT, ATOM, UAH
 - **🔄 Exchange Rate Updates**: Automatic hourly updates from multiple APIs
 - **💱 Currency Conversion**: Real-time conversion between all supported currencies
+- **🎤 Voice Transactions**: Add expenses via voice messages (Google Cloud Speech-to-Text)
 
 ### User Experience
 - **🤖 Intuitive Interface**: Easy-to-use inline keyboard navigation
@@ -35,12 +36,73 @@ A comprehensive Telegram bot for tracking income and expenses with PostgreSQL ba
 - **💱 Currency Selection**: Select currency for each transaction
 - **📊 Unified Balance**: View all balances converted to your preferred currency
 
-## 🛠️ Installation & Setup
+## 🛠️ Quick Start (Docker - Recommended)
 
 ### Prerequisites
-- Python 3.8 or higher
-- PostgreSQL 12 or higher
+- Docker and Docker Compose installed
 - Telegram Bot Token (from [@BotFather](https://t.me/botfather))
+- (Optional) Google Cloud credentials for voice input
+
+### Step 1: Get Your Bot Token
+1. Open Telegram and message [@BotFather](https://t.me/botfather)
+2. Send `/newbot` and follow instructions
+3. Copy your bot token (looks like: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`)
+
+### Step 2: Clone and Configure
+```bash
+# Clone repository
+git clone <repository-url>
+cd telegram_expense_bot
+
+# Create environment file
+cp env.example .env
+
+# Edit .env and add your bot token
+nano .env
+# Set: TELEGRAM_BOT_TOKEN=your_token_here
+```
+
+### Step 3: (Optional) Enable Voice Input
+If you want voice transaction support via Google Cloud Speech-to-Text:
+
+1. Create a Google Cloud project and enable Speech-to-Text API
+2. Create a service account and download `credentials.json`
+3. Place `credentials.json` in the project root
+4. Update `.env`:
+```env
+ENABLE_VOICE_INPUT=True
+GOOGLE_CLOUD_PROJECT=your_project_id
+GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+SPEECH_RECOGNITION_LANGUAGES=ru-RU,en-US,uk-UA
+SPEECH_TARGET_LANGUAGE=ru-RU
+```
+
+> **Note:** If you don't need voice input, leave `ENABLE_VOICE_INPUT=False` (default) and skip this step entirely.
+
+### Step 4: Start the Bot
+```bash
+# Make scripts executable
+chmod +x docker-start.sh docker-stop.sh
+
+# Start everything (builds images, creates database, runs migrations)
+./docker-start.sh
+```
+
+That's it! Your bot is now running. Find it on Telegram and send `/start`.
+
+### Step 5: Stop the Bot
+```bash
+./docker-stop.sh
+```
+
+---
+
+## 🛠️ Manual Installation (Without Docker)
+
+### Prerequisites
+- Python 3.11 or higher
+- PostgreSQL 12 or higher
+- Telegram Bot Token
 
 ### 1. Clone the Repository
 ```bash
@@ -48,53 +110,58 @@ git clone <repository-url>
 cd telegram_expense_bot
 ```
 
-### 2. Install Dependencies
+### 2. Create Virtual Environment
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Database Setup
-Create a PostgreSQL database:
+### 4. Setup PostgreSQL Database
 ```sql
 CREATE DATABASE expense_tracker;
 CREATE USER expense_user WITH PASSWORD 'your_password';
 GRANT ALL PRIVILEGES ON DATABASE expense_tracker TO expense_user;
 ```
 
-### 4. Environment Configuration
-Copy the example environment file and configure it:
+### 5. Configure Environment
 ```bash
-cp .env.example .env
+cp env.example .env
+nano .env
 ```
 
-Edit `.env` with your settings:
+Edit `.env`:
 ```env
-# Telegram Bot Configuration
 TELEGRAM_BOT_TOKEN=your_bot_token_here
-
-# Database Configuration
 DATABASE_URL=postgresql://expense_user:your_password@localhost:5432/expense_tracker
-
-# Optional: Individual database settings
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=expense_tracker
 DB_USER=expense_user
 DB_PASSWORD=your_password
-
-# Application Configuration
 DEBUG=True
 LOG_LEVEL=INFO
 ```
 
-### 5. Initialize Database
+### 6. Initialize Database
 ```bash
-python setup_database.py
+# Run all migrations and create default categories
+python migrations.py
 ```
 
-### 6. Run the Bot
+### 7. Run the Bot
 ```bash
 python main.py
+```
+
+Or use the startup script:
+```bash
+chmod +x start.sh
+./start.sh
 ```
 
 ## 📱 Usage
@@ -102,36 +169,48 @@ python main.py
 ### Getting Started
 1. Start a conversation with your bot on Telegram
 2. Send `/start` to initialize your account
-3. The bot will create default categories for you
-4. Use the inline keyboard to navigate through features
+3. Choose your language (English/Russian/Ukrainian)
+4. Set your preferred currency (USD/UAH/USDT/ATOM)
+5. The bot creates default categories automatically
+6. Use the inline keyboard to navigate
 
 ### Commands
 - `/start` - Initialize bot and show main menu
 - `/help` - Display help information
 - `/balance` - Show current financial summary
+- `/add` - Quick add expense
 
 ### Main Features
 
 #### 💰 Adding Transactions
-1. Click "Add Transaction" from main menu
-2. Choose "Add Income" or "Add Expense"
-3. Select a category from the list
-4. Enter the amount
-5. Transaction is automatically saved
+**Via Menu:**
+1. Click "📝 Добавить транзакцию" from main menu
+2. Choose "💰 Добавить доход" or "💸 Добавить расход"
+3. Select a category
+4. Choose date (today/yesterday/custom)
+5. Enter amount using inline keyboard
+6. Transaction saved automatically
+
+**Via Voice (if enabled):**
+1. Send a voice message: "здоровье 380 гривен сегодня"
+2. Bot auto-detects category, amount, and date
+3. Transaction created instantly
+4. Supports: Russian, English, Ukrainian
+5. Recognizes "тысяч/thousand/k" for thousands
 
 #### 🏷️ Managing Categories
-1. Click "Manage Categories" from main menu
-2. Choose to add, view, edit, or delete categories
-3. Create custom categories with icons and descriptions
-4. Organize your finances exactly how you want
+1. Click "🏷️ Управление категориями" from main menu
+2. Add/edit/delete income and expense categories
+3. Customize icons, names (multilingual), and colors
+4. Set primary income category for balance calculations
 
-#### 📊 Viewing Reports
-1. Click "View Reports" from main menu
-2. Choose from:
-   - **Monthly Report**: Current month's income, expenses, and balance
-   - **Yearly Report**: Annual summary with monthly breakdown
-   - **Category Breakdown**: Detailed spending by category
-   - **Analytics**: Usage statistics and insights
+#### 📊 Viewing Reports & Statistics
+Click "📊 Статистика" from main menu:
+- **💰 Баланс**: All-time balance (income - expenses) by category
+- **📅 Недельный отчет**: Weekly summary
+- **📅 Месячный отчет**: Monthly income/expense/net
+- **📅 Годовой отчет**: Annual overview
+- **📋 Разбивка по категориям**: Detailed category breakdown
 
 ## 🏗️ Project Structure
 
@@ -230,77 +309,93 @@ The bot automatically creates these default categories for new users:
 - 📚 Education
 - 📝 Other Expenses
 
-## 🚀 Deployment
+## 🚀 Useful Docker Commands
 
-### Using Docker Compose (Recommended for Testing)
-
-The easiest way to run the bot for testing is using Docker Compose. This will set up both the bot and PostgreSQL database automatically.
-
-#### Quick Start
-
-1. **Get your Telegram Bot Token:**
-   - Message [@BotFather](https://t.me/botfather) on Telegram
-   - Create a new bot with `/newbot`
-   - Copy the bot token
-
-2. **Set up environment:**
-   ```bash
-   # Copy the example environment file
-   cp env.example .env
-   
-   # Edit .env and add your bot token
-   nano .env
-   ```
-
-3. **Start the bot:**
-   ```bash
-   # Make scripts executable (if needed)
-   chmod +x docker-start.sh docker-stop.sh
-   
-   # Start the bot
-   ./docker-start.sh
-   ```
-
-4. **Stop the bot:**
-   ```bash
-   ./docker-stop.sh
-   ```
-
-#### Manual Docker Commands
-
-If you prefer to use Docker commands directly:
-
+### View Logs
 ```bash
-# Build and start services
-docker-compose up -d
+# Follow bot logs in real-time
+docker compose logs -f bot
 
-# View logs
-docker-compose logs -f bot
+# View last 50 lines
+docker compose logs bot --tail=50
 
-# Stop services
-docker-compose down
-
-# Stop and remove all data
-docker-compose down -v
+# View database logs
+docker compose logs postgres
 ```
 
-#### Services Included
+### Manage Services
+```bash
+# Restart bot only
+docker compose restart bot
 
-- **Bot**: The Telegram bot application
-- **PostgreSQL**: Database for storing user data
-- **pgAdmin**: Web interface for database management
-  - Access at: http://localhost:8080
-  - Login: admin@example.com / admin
+# Rebuild and restart after code changes
+docker compose build bot && docker compose up -d
 
-#### Environment Variables
+# Stop all services
+docker compose down
 
-The Docker setup uses these default values:
-- Database: `expense_tracker`
-- User: `expense_user`
-- Password: `expense_password`
-- Port: `5432`
+# Stop and remove all data (⚠️ deletes database!)
+docker compose down -v
+```
 
-You can modify these in `docker-compose.yml` or override them in your `.env` file.
+### Database Access
+```bash
+# Access PostgreSQL console
+docker compose exec postgres psql -U expense_user -d expense_tracker
+
+# Run migrations manually
+docker compose exec -T bot python migrations.py
+
+# Backup database
+docker compose exec postgres pg_dump -U expense_user expense_tracker > backup.sql
+
+# Restore database
+cat backup.sql | docker compose exec -T postgres psql -U expense_user -d expense_tracker
+```
+
+### Troubleshooting
+```bash
+# Check container status
+docker compose ps
+
+# Check bot container health
+docker compose exec bot python -c "print('Bot container is healthy')"
+
+# Restart from scratch (⚠️ deletes all data!)
+docker compose down -v
+docker compose build --no-cache
+./docker-start.sh
+```
+
+## 🎤 Voice Transaction Setup
+
+Voice input uses Google Cloud Speech-to-Text for automatic expense recognition.
+
+### Features
+- **Auto-detect** category from speech ("здоровье", "еда", "транспорт")
+- **Extract** amount including thousands ("256 тысяч" → 256,000)
+- **Recognize** date keywords ("сегодня", "вчера", or defaults to today)
+- **Multi-language** support: Russian, English, Ukrainian
+- **Instant** transaction creation when all fields recognized
+
+### Setup Steps
+1. Create Google Cloud project at [console.cloud.google.com](https://console.cloud.google.com)
+2. Enable **Cloud Speech-to-Text API**
+3. Create service account with Speech-to-Text permissions
+4. Download credentials as `credentials.json`
+5. Place file in project root: `telegram_expense_bot/credentials.json`
+6. Configure `.env`:
+```env
+ENABLE_VOICE_INPUT=True
+GOOGLE_CLOUD_PROJECT=your-project-id
+GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+SPEECH_RECOGNITION_LANGUAGES=ru-RU,en-US,uk-UA
+SPEECH_TARGET_LANGUAGE=ru-RU
+```
+7. Restart: `docker compose restart bot`
+
+### Disabling Voice Input
+Set `ENABLE_VOICE_INPUT=False` in `.env` and restart. The bot will ignore voice messages.
 
 ### Using Docker (Production)
 ```dockerfile

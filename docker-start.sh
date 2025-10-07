@@ -38,8 +38,8 @@ docker compose up -d
 echo "⏳ Waiting for database to be ready..."
 sleep 10
 
-echo "🗄️  Initializing database..."
-docker compose exec bot python setup_database.py
+echo "🗄️  Initializing database (migrations)..."
+docker compose exec -T bot python migrations.py
 
 echo "✅ Bot is starting up!"
 echo ""

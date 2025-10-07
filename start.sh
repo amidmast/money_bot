@@ -27,9 +27,9 @@ source venv/bin/activate
 echo "📥 Installing dependencies..."
 pip install -r requirements.txt
 
-# Check if database is initialized
-echo "🗄️ Checking database..."
-python setup_database.py
+# Initialize/upgrade database (tables + migrations + defaults)
+echo "🗄️ Initializing database (migrations)..."
+python migrations.py
 
 # Start the bot
 echo "🤖 Starting the bot..."
