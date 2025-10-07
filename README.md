@@ -17,6 +17,7 @@ A comprehensive Telegram bot for tracking income and expenses with PostgreSQL ba
 *Simple transaction entry with category selection and amount input*
 
 ### Voice Input
+*Voice-msg: "Здоровье одна тысяча двести"*
 <img src="docs/images/voice-input.png" width="300" alt="Voice Transaction">
 
 *Voice message recognition with auto-detection of category, amount, and date*
