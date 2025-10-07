@@ -472,8 +472,14 @@ class CategoryHandler(BaseHandler):
         user = self.db.query(User).filter(User.telegram_id == user_data['telegram_id']).first()
         language = user.preferred_language if user else "en"
         
+        keyboard = [
+            [InlineKeyboardButton(get_translation('back', language), callback_data=f"edit_category_{category_id}")],
+            [InlineKeyboardButton(get_translation('back_to_main', language), callback_data="main_menu")]
+        ]
+        
         await update.callback_query.edit_message_text(
             get_translation("enter_new_name_en", language),
+            reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode='Markdown'
         )
     
@@ -490,8 +496,14 @@ class CategoryHandler(BaseHandler):
         user = self.db.query(User).filter(User.telegram_id == user_data['telegram_id']).first()
         language = user.preferred_language if user else "en"
         
+        keyboard = [
+            [InlineKeyboardButton(get_translation('back', language), callback_data=f"edit_category_{category_id}")],
+            [InlineKeyboardButton(get_translation('back_to_main', language), callback_data="main_menu")]
+        ]
+        
         await update.callback_query.edit_message_text(
             get_translation("enter_new_name_ru", language),
+            reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode='Markdown'
         )
     
@@ -508,8 +520,14 @@ class CategoryHandler(BaseHandler):
         user = self.db.query(User).filter(User.telegram_id == user_data['telegram_id']).first()
         language = user.preferred_language if user else "en"
         
+        keyboard = [
+            [InlineKeyboardButton(get_translation('back', language), callback_data=f"edit_category_{category_id}")],
+            [InlineKeyboardButton(get_translation('back_to_main', language), callback_data="main_menu")]
+        ]
+        
         await update.callback_query.edit_message_text(
             get_translation("enter_new_icon", language),
+            reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode='Markdown'
         )
     
@@ -526,8 +544,14 @@ class CategoryHandler(BaseHandler):
         user = self.db.query(User).filter(User.telegram_id == user_data['telegram_id']).first()
         language = user.preferred_language if user else "en"
         
+        keyboard = [
+            [InlineKeyboardButton(get_translation('back', language), callback_data=f"edit_category_{category_id}")],
+            [InlineKeyboardButton(get_translation('back_to_main', language), callback_data="main_menu")]
+        ]
+        
         await update.callback_query.edit_message_text(
             get_translation("enter_new_color", language),
+            reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode='Markdown'
         )
     
@@ -578,10 +602,18 @@ class CategoryHandler(BaseHandler):
         context.user_data.pop('edit_category_id', None)
         context.user_data.pop('edit_field', None)
         
-        # Send success message
+        # Send success message with navigation buttons
         localized_name = category.get_name(language)
         success_message = get_translation("category_updated", language).format(
             category_name=localized_name
         )
         
-        await update.message.reply_text(success_message)
+        keyboard = [
+            [InlineKeyboardButton(get_translation('back', language), callback_data=f"edit_category_{category_id}")],
+            [InlineKeyboardButton(get_translation('back_to_main', language), callback_data="main_menu")]
+        ]
+        
+        await update.message.reply_text(
+            success_message,
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
