@@ -52,7 +52,7 @@ A comprehensive Telegram bot for tracking income and expenses with PostgreSQL ba
 ```bash
 # Clone repository
 git clone <repository-url>
-cd telegram_expense_bot
+cd money_bot
 
 # Create environment file
 cp env.example .env
@@ -107,7 +107,7 @@ That's it! Your bot is now running. Find it on Telegram and send `/start`.
 ### 1. Clone the Repository
 ```bash
 git clone <repository-url>
-cd telegram_expense_bot
+cd money_bot
 ```
 
 ### 2. Create Virtual Environment
@@ -383,7 +383,7 @@ Voice input uses Google Cloud Speech-to-Text for automatic expense recognition.
 2. Enable **Cloud Speech-to-Text API**
 3. Create service account with Speech-to-Text permissions
 4. Download credentials as `credentials.json`
-5. Place file in project root: `telegram_expense_bot/credentials.json`
+5. Place file in project root: `money_bot/credentials.json`
 6. Configure `.env`:
 ```env
 ENABLE_VOICE_INPUT=True
@@ -419,7 +419,7 @@ After=network.target
 [Service]
 Type=simple
 User=your_user
-WorkingDirectory=/path/to/telegram_expense_bot
+WorkingDirectory=/path/to/money_bot
 ExecStart=/usr/bin/python3 main.py
 Restart=always
 Environment=PYTHONPATH=/path/to/telegram_expense_bot/src
