@@ -2,6 +2,32 @@
 
 A comprehensive Telegram bot for tracking income and expenses with PostgreSQL backend, featuring category management, detailed reporting, and analytics.
 
+## 📸 Screenshots
+
+### Main Menu
+<img src="docs/images/main-menu.png" width="300" alt="Main Menu">
+
+*Main bot interface with quick access to all features*
+
+### Adding Transaction
+<img src="docs/images/add-transaction.png" width="300" alt="Add Transaction">
+<img src="docs/images/add-transaction-2.png" width="300" alt="Add Transaction">
+<img src="docs/images/add-transaction-3.png" width="300" alt="Add Transaction">
+
+*Simple transaction entry with category selection and amount input*
+
+### Voice Input
+<img src="docs/images/voice-input.png" width="300" alt="Voice Transaction">
+
+*Voice message recognition with auto-detection of category, amount, and date*
+
+### Statistics & Balance
+<img src="docs/images/statistics.png" width="300" alt="Statistics">
+
+*Comprehensive financial reports and balance overview*
+
+---
+
 ## 🚀 Features
 
 ### Core Functionality
